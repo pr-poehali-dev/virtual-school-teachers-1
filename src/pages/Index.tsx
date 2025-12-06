@@ -13,12 +13,14 @@ import Login from './Login';
 import Analytics from './Analytics';
 import StudentDashboard from './StudentDashboard';
 import GradeBook from './GradeBook';
+import AssignmentReview from './AssignmentReview';
 
 const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState<'teacher' | 'student'>('teacher');
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [showGradeBook, setShowGradeBook] = useState(false);
+  const [showAssignmentReview, setShowAssignmentReview] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
   const [userEmail, setUserEmail] = useState('');
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
@@ -133,6 +135,10 @@ const Index = () => {
     return <GradeBook onBack={() => setShowGradeBook(false)} />;
   }
 
+  if (showAssignmentReview) {
+    return <AssignmentReview onBack={() => setShowAssignmentReview(false)} />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
@@ -187,6 +193,14 @@ const Index = () => {
               >
                 <Icon name="ClipboardList" size={18} />
                 Табель
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => setShowAssignmentReview(true)}
+                className="gap-2"
+              >
+                <Icon name="PenLine" size={18} />
+                Проверка
               </Button>
             </nav>
             <div className="flex items-center gap-3">

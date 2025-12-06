@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import AssignmentsPage from './AssignmentsPage';
+import PerformanceSummary from './PerformanceSummary';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -33,6 +35,8 @@ interface Assignment {
 
 const StudentDashboard = ({ studentEmail, onLogout }: StudentDashboardProps) => {
   const [activeTab, setActiveTab] = useState('courses');
+  const [showAssignments, setShowAssignments] = useState(false);
+  const [showPerformance, setShowPerformance] = useState(false);
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
   const [answer, setAnswer] = useState('');
   const [testAnswers, setTestAnswers] = useState<{ [key: number]: string }>({});
@@ -229,6 +233,14 @@ const StudentDashboard = ({ studentEmail, onLogout }: StudentDashboardProps) => 
     setTestAnswers({});
   };
 
+  if (showAssignments) {
+    return <AssignmentsPage onBack={() => setShowAssignments(false)} />;
+  }
+
+  if (showPerformance) {
+    return <PerformanceSummary onBack={() => setShowPerformance(false)} />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
@@ -279,15 +291,47 @@ const StudentDashboard = ({ studentEmail, onLogout }: StudentDashboardProps) => 
             ))}
           </div>
 
+          <div className="flex flex-wrap gap-3 mb-6">
+            <Button
+              variant={activeTab === 'courses' ? 'default' : 'outline'}
+              onClick={() => setActiveTab('courses')}
+              className="gap-2"
+            >
+              <Icon name="BookOpen" size={18} />
+              Мои курсы
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setShowAssignments(true)}
+              className="gap-2 relative"
+            >
+              <Icon name="FileText" size={18} />
+              Задания
+              {pendingAssignments > 0 && (
+                <Badge className="ml-1 bg-orange-500" variant="default">{pendingAssignments}</Badge>
+              )}
+            </Button>
+            <Button
+              variant={activeTab === 'grades' ? 'default' : 'outline'}
+              onClick={() => setActiveTab('grades')}
+              className="gap-2"
+            >
+              <Icon name="Award" size={18} />
+              Оценки
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setShowPerformance(true)}
+              className="gap-2"
+            >
+              <Icon name="BarChart3" size={18} />
+              Итоговая успеваемость
+            </Button>
+          </div>
+
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full max-w-lg grid-cols-3">
+            <TabsList className="hidden">
               <TabsTrigger value="courses">Мои курсы</TabsTrigger>
-              <TabsTrigger value="assignments">
-                Задания
-                {pendingAssignments > 0 && (
-                  <Badge className="ml-2 bg-orange-500" variant="default">{pendingAssignments}</Badge>
-                )}
-              </TabsTrigger>
               <TabsTrigger value="grades">Оценки</TabsTrigger>
             </TabsList>
 
@@ -334,7 +378,7 @@ const StudentDashboard = ({ studentEmail, onLogout }: StudentDashboardProps) => 
               </div>
             </TabsContent>
 
-            <TabsContent value="assignments" className="space-y-6 mt-6">
+            <TabsContent value="grades" className="space-y-6 mt-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="font-heading">Активные задания</CardTitle>
