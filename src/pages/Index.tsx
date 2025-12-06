@@ -11,10 +11,14 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Login from './Login';
 import Analytics from './Analytics';
+import StudentDashboard from './StudentDashboard';
+import GradeBook from './GradeBook';
 
 const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState<'teacher' | 'student'>('teacher');
   const [showAnalytics, setShowAnalytics] = useState(false);
+  const [showGradeBook, setShowGradeBook] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
   const [userEmail, setUserEmail] = useState('');
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
@@ -110,11 +114,23 @@ const Index = () => {
   };
 
   if (!isAuthenticated) {
-    return <Login onLogin={(email) => { setIsAuthenticated(true); setUserEmail(email); }} />;
+    return <Login onLogin={(email, role) => { 
+      setIsAuthenticated(true); 
+      setUserEmail(email); 
+      setUserRole(role);
+    }} />;
+  }
+
+  if (userRole === 'student') {
+    return <StudentDashboard studentEmail={userEmail} onLogout={() => setIsAuthenticated(false)} />;
   }
 
   if (showAnalytics) {
     return <Analytics onBack={() => setShowAnalytics(false)} />;
+  }
+
+  if (showGradeBook) {
+    return <GradeBook onBack={() => setShowGradeBook(false)} />;
   }
 
   return (
@@ -163,6 +179,14 @@ const Index = () => {
               >
                 <Icon name="BarChart3" size={18} />
                 Аналитика
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => setShowGradeBook(true)}
+                className="gap-2"
+              >
+                <Icon name="ClipboardList" size={18} />
+                Табель
               </Button>
             </nav>
             <div className="flex items-center gap-3">
