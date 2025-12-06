@@ -9,9 +9,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import Login from './Login';
+import Analytics from './Analytics';
 
 const Index = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
+  const [userEmail, setUserEmail] = useState('');
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
   const [lessonBuilder, setLessonBuilder] = useState({
     title: '',
@@ -104,6 +109,14 @@ const Index = () => {
     });
   };
 
+  if (!isAuthenticated) {
+    return <Login onLogin={(email) => { setIsAuthenticated(true); setUserEmail(email); }} />;
+  }
+
+  if (showAnalytics) {
+    return <Analytics onBack={() => setShowAnalytics(false)} />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
@@ -143,11 +156,22 @@ const Index = () => {
                 <Icon name="Pencil" size={18} />
                 Конструктор
               </Button>
+              <Button
+                variant="ghost"
+                onClick={() => setShowAnalytics(true)}
+                className="gap-2"
+              >
+                <Icon name="BarChart3" size={18} />
+                Аналитика
+              </Button>
             </nav>
-            <Button className="gap-2">
-              <Icon name="User" size={18} />
-              <span className="hidden sm:inline">Профиль</span>
-            </Button>
+            <div className="flex items-center gap-3">
+              <span className="hidden sm:inline text-sm text-muted-foreground">{userEmail}</span>
+              <Button variant="outline" size="sm" className="gap-2" onClick={() => setIsAuthenticated(false)}>
+                <Icon name="LogOut" size={16} />
+                <span className="hidden sm:inline">Выйти</span>
+              </Button>
+            </div>
           </div>
         </div>
       </header>
